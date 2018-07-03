@@ -173,6 +173,12 @@ def unfollow(browser,
                         click_element(browser, follow_button) # follow_button.click()
                         sleep(4)
 
+                        try:
+                            browser.find_element_by_xpath("//button[contains(text(), 'Unfollow')]").click()
+                            sleep(1)
+                        except Exception,e:
+                            pass
+
                         # double check not following
                         follow_button = browser.find_element_by_xpath(
                             "//*[contains(text(), 'Follow')]")
@@ -344,6 +350,14 @@ def unfollow(browser,
                 if follow_button.text == 'Following':
                     unfollowNum += 1
                     click_element(browser, follow_button) # follow_button.click()
+
+                    sleep(2)
+                    try:
+                        browser.find_element_by_xpath("//button[contains(text(), 'Unfollow')]").click()
+                        sleep(1)
+                    except Exception,e:
+                        pass
+
                     logger.info('--> Ongoing Unfollow ' + str(unfollowNum) +
                           ', now unfollowing: {}'
                           .format(person.encode('utf-8')))
@@ -409,6 +423,15 @@ def unfollow(browser,
                 if person not in dont_include:
                     unfollowNum += 1
                     click_element(browser, button) # button.click()
+
+                    sleep(2)
+                    
+                    try:
+                        browser.find_element_by_xpath("//button[contains(text(), 'Unfollow')]").click()
+                        sleep(1)
+                    except Exception,e:
+                        pass
+
                     update_activity('unfollows')
 
                     logger.info(
@@ -554,7 +577,7 @@ def get_users_through_dialog(browser,
     if randomize and amount >= 3:
         # expanding the popultaion for better sampling distribution
         amount = amount * 3
-        
+
     if amount > int(users_count*0.85):   #taking 85 percent of possible amounts is a safe study
         amount = int(users_count*0.85)
     try_again = 0
@@ -593,7 +616,7 @@ def get_users_through_dialog(browser,
         if abort:
             if total_list < real_amount:
                 logger.info("Failed to load desired amount of users")
-        
+
         if sc_rolled > 85:   #you may want to use up to 100
             if total_list < amount:
                 logger.info("Too many requests sent!  attempt: {}  |  gathered links: {}   ~sleeping a bit  ".format(try_again+1, total_list))
@@ -646,10 +669,10 @@ def get_users_through_dialog(browser,
 
 def dialog_username_extractor(follow_buttons):
     """ Extract username of a follow button from a dialog box """
-    
+
     if not isinstance(follow_buttons, list):
         follow_buttons = [follow_buttons]
-    
+
     person_list = []
     for person in follow_buttons:
 
@@ -677,14 +700,14 @@ def follow_through_dialog(browser,
     """ Will follow username directly inside a dialog box """
     if not isinstance(person_list, list):
         person_list = [person_list]
-    
+
     if not isinstance(buttons, list):
         buttons = [buttons]
-    
+
     person_followed = []
     try:
         for person, button in zip(person_list, buttons):
-            
+
             if (person not in dont_include and
                 follow_restrict.get(person, 0) < follow_times):
 
@@ -712,7 +735,7 @@ def follow_through_dialog(browser,
 
             else:
                 logger.info("Not followed '{}'  ~inappropriate user".format(person))
-                
+
     except BaseException as e:
         logger.error("Error occured while following through dialog box:\n{}".format(str(e)))
 
@@ -768,7 +791,7 @@ def get_given_user_followers(browser,
                     "ProfilePage[0].graphql.user.edge_followed_by.count")
             except WebDriverException:
                 try:
-                    allfollowers = format_number(browser.find_elements_by_xpath( 
+                    allfollowers = format_number(browser.find_elements_by_xpath(
                         "//span[contains(@class,'g47SY')]")[1].text)
                 except NoSuchElementException:
                     logger.error("Error occured during getting the followers count of '{}'\n".format(user_name))
@@ -842,7 +865,7 @@ def get_given_user_following(browser,
                     "ProfilePage[0].graphql.user.edge_follow.count")
             except WebDriverException:
                 try:
-                    allfollowing = format_number(browser.find_elements_by_xpath( 
+                    allfollowing = format_number(browser.find_elements_by_xpath(
                         "//span[contains(@class,'g47SY')]")[2].text)
                 except NoSuchElementException:
                     logger.error("\nError occured during getting the following count of '{}'\n".format(user_name))
@@ -900,4 +923,3 @@ def load_follow_restriction(logfolder):
 
     with open(filename) as followResFile:
         return json.load(followResFile)
-
