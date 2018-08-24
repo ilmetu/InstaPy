@@ -388,8 +388,7 @@ def unfollow(browser,
                                      "Unfollow", logger, logfolder)
 
         # find dialog box
-        dialog = browser.find_element_by_xpath(
-            "//div[text()='Following']/following-sibling::div")
+        dialog = browser.find_element_by_xpath("//div[@class='pbNvD fPMEg  HYpXt']")
         sleep(3)
 
         # get persons, unfollow buttons, and length of followed pool
